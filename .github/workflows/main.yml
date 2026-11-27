@@ -1,0 +1,40 @@
+name: Build PonLoveThao
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Theos
+        run: |
+          brew install ldid dpkg
+          git clone --recursive https://github.com/theos/theos.git "$HOME/theos"
+          echo "THEOS=$HOME/theos" >> "$GITHUB_ENV"
+
+      - name: Build
+        run: |
+          chmod +x ./build.sh
+          ./build.sh
+
+      - name: Extract DYLIB
+        run: |
+          set -euo pipefail
+          mkdir -p out/payload
+          PACKAGE=$(find packages -maxdepth 1 -name '*.deb' | head -n 1)
+          test -n "$PACKAGE"
+          dpkg-deb -x "$PACKAGE" out/payload
+          DYLIB=$(find out/payload -name 'PonLoveThao.dylib' -print -quit)
+          test -n "$DYLIB"
+          cp "$DYLIB" out/
+          cp PonLoveThao.plist VideoStarTool_menu_background.jpg VideoStarTool_menu_logo.png out/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PonLoveThao-iOS-arm64
+          path: out/
