@@ -1,0 +1,9 @@
+Package: com.ponlovethao.videostartool
+Name: Pon Love Thao
+Version: 1.0.1
+Architecture: iphoneos-arm
+Description: Menu overlay and helper functions for Video Star.
+Maintainer: Pon Love Thao
+Author: Pon Love Thao
+Section: Tweaks
+Depends: mobilesubstrate
